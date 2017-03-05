@@ -1,0 +1,66 @@
+package cn.itcast.cookie.bookhistory;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import cn.itcast.domain.Book;
+import cn.itcast.domain.BookDB;
+
+/**
+ * 展示图书详细信息并且加入购物车中
+ */
+
+public class BuyServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+		//设置响应正文字符集
+		response.setContentType("text/html;charset=UTF-8");
+		PrintWriter pWriter = response.getWriter();
+		//获取加入购物车的bookid
+		String bookid = request.getParameter("bookid");
+		//2.根据bookid获取book对象
+		Map<String,Book> map = BookDB.findAllBook();
+		Book book = map.get(bookid);
+		
+		/*
+		 * 把要买的图书加入购物车中
+		 *    分析:
+		 *       1.每个人都要有自己的购物车，用到的对象是HttpSession
+		 *       2.需要用一个集合来维护购物车中的图书信息   
+		 * */
+		HttpSession session = request.getSession();
+		/*//由于购物车中的书有可能不止一本，所以要用集合来进行维护,，此时程序这样直接写下来每读进一本书都会创建一个集合
+		List<Book> blist = new ArrayList<Book>();
+		blist.add(book);
+		session.setAttribute("blist",blist);*/
+		List<Book> blist = (List<Book>)session.getAttribute("blist");
+		//如果用户是第一次购物，则没有购物车
+		if(blist == null){
+			blist = new ArrayList<Book>();
+		}
+		//把要买的图书加入购物车中
+		blist.add(book);
+		//把list放入到请求域中
+		session.setAttribute("blist",blist);
+		//3.输出图书的详细信息
+		pWriter.write(book.toString());
+		
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+
+}
