@@ -1,4 +1,4 @@
 # Shopping-Cart
 简单的一个cookie购物车的实现。
-Code是浏览器不支持cookie的代码实现。
+Code是浏览器可能不支持cookie的代码实现，首先建立会话判断客户端浏览器是否支持cookie，如果不支持，则使用encodeURL在地址栏后边添加JESSIONID来保持数据。
 Coding是浏览器支持cookie的代码实现
