@@ -1,0 +1,47 @@
+package cn.itcast.cookie.bookhistory;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import cn.itcast.domain.Book;
+
+/**
+ * 展示购物车信息
+ */
+public class ShowCartInfo extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+		//设置响应正文字符集
+		response.setContentType("text/html;charset=UTF-8");
+		PrintWriter pw = response.getWriter();
+		//获取HttpSession对象
+		HttpSession session = request.getSession();
+		List<Book> books = (List<Book>)session.getAttribute("blist");
+		
+		//判断用户是否已经购物
+		if(books == null){
+			String url = request.getContentType()+"/BuyServlet";
+			pw.write("您还没有购物<a href='"+response.encodeURL(url)+"'>请现在去购物</a>");
+		    return;
+		}
+		//购物车中有商品
+		for(Book b:books){
+			pw.write(b.toString()+"<br/>");
+		}
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
+
+}
